@@ -11,5 +11,7 @@ echo "1" > last_used_ip.var
 # Resetting the server configuration template to default settings
 cp -f wg0.conf.def wg0.conf
 
-echo "# Reseted"
+systemctl stop wg-quick@wg0
+wg-quick down wg0
 
+echo "# Reseted"

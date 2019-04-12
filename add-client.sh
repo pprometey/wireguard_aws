@@ -29,14 +29,14 @@ mkdir ./$USERNAME
 cd ./$USERNAME
 umask 077
 
-# We create keys for the client
-wg genpsk > ./"$USERNAME$PRESHARED_KEY"
-wg genkey | tee ./"$USERNAME$PRIV_KEY" | wg pubkey > ./"$USERNAME$PUB_KEY"
+CLIENT_PRESHARED_KEY=$( wg genpsk )
+CLIENT_PRIVKEY=$( wg genkey )
+CLIENT_PUBLIC_KEY=$( echo $CLIENT_PRIVKEY | wg pubkey )
 
-# Read variable keys from files
-read CLIENT_PRESHARED_KEY < ./"$USERNAME$PRESHARED_KEY"
-read CLIENT_PRIVKEY < ./"$USERNAME$PRIV_KEY"
-read CLIENT_PUBLIC_KEY < ./"$USERNAME$PUB_KEY"
+echo $CLIENT_PRESHARED_KEY > ./"$USERNAME$PRESHARED_KEY"
+echo $CLIENT_PRIVKEY > ./"$USERNAME$PRIV_KEY"
+echo $CLIENT_PUBLIC_KEY > ./"$USERNAME$PUB_KEY"
+
 read SERVER_PUBLIC_KEY < /etc/wireguard/server_public.key
 
 # We get the following client IP address
@@ -44,7 +44,7 @@ read OCTET_IP < /etc/wireguard/last_used_ip.var
 OCTET_IP=$(($OCTET_IP+1))
 echo $OCTET_IP > /etc/wireguard/last_used_ip.var
 
-CLIENT_IP="$VPN_SUBNET$i/32"
+CLIENT_IP="$VPN_SUBNET$OCTET_IP/32"
 
 # Create a blank configuration file client 
 cat > /etc/wireguard/clients/$USERNAME/$USERNAME.conf << EOF
@@ -74,7 +74,6 @@ systemctl stop wg-quick@wg0
 wg-quick down wg0
 wg-quick up wg0
 systemctl start wg-quick@wg0
-
 
 # Show QR config to display
 qrencode -t ansiutf8 < ./$USERNAME.conf

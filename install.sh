@@ -20,9 +20,6 @@ SERVER_PUBKEY=$( echo $SERVER_PRIVKEY | wg pubkey )
 echo $SERVER_PUBKEY > ./server_public.key
 echo $SERVER_PRIVKEY > ./server_private.key
 
-#wg genkey | tee ./server_private.key | wg pubkey | tee ./server_public.key
-#read SERVER_PRIVKEY < ./server_private.key
-
 if [ -z "$1" ]
   then 
     read -p "Enter the server address in the VPN subnet (CIDR format), [ENTER] set to default: 10.50.0.1: " SERVER_IP
