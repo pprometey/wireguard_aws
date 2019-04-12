@@ -32,3 +32,5 @@ reset.sh - script that removes information about clients. And stopping the VPN s
 ```
 ./remove.sh
 ```
+## Authors
+- Alexey Chernyavskiy
