@@ -1,5 +1,5 @@
 # Install and use AWS-based Wireguard
-Scripts automate the installation and use AWS-based Wireguard
+Scripts automate the installation and use of Wireguard on AWS
 
 ## How use
 
