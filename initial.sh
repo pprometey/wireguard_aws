@@ -2,6 +2,7 @@ l#!/bin/bash
 
 echo "# Installing Wireguard"
 
+chmod +x reset.sh
 chmod +x remove.sh
 ./remove.sh
 
