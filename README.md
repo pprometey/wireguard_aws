@@ -22,7 +22,7 @@ The `initial.sh` script removes the previous Wireguard installation (if any) usi
 ```
 
 ### Reset customers
-reset.sh - script that removes information about clients. And stopping the VPN server Winguard
+`reset.sh` - script that removes information about clients. And stopping the VPN server Winguard
 ```
 ./reset.sh
 ```
