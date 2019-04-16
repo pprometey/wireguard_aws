@@ -33,9 +33,9 @@ CLIENT_PRESHARED_KEY=$( wg genpsk )
 CLIENT_PRIVKEY=$( wg genkey )
 CLIENT_PUBLIC_KEY=$( echo $CLIENT_PRIVKEY | wg pubkey )
 
-echo $CLIENT_PRESHARED_KEY > ./"$USERNAME$PRESHARED_KEY"
-echo $CLIENT_PRIVKEY > ./"$USERNAME$PRIV_KEY"
-echo $CLIENT_PUBLIC_KEY > ./"$USERNAME$PUB_KEY"
+#echo $CLIENT_PRESHARED_KEY > ./"$USERNAME$PRESHARED_KEY"
+#echo $CLIENT_PRIVKEY > ./"$USERNAME$PRIV_KEY"
+#echo $CLIENT_PUBLIC_KEY > ./"$USERNAME$PUB_KEY"
 
 read SERVER_PUBLIC_KEY < /etc/wireguard/server_public.key
 
@@ -77,4 +77,4 @@ systemctl start wg-quick@wg0
 qrencode -t ansiutf8 < ./$USERNAME.conf
 
 # Save QR config to png file
-qrencode -t png -o ./$USERNAME.png < ./$USERNAME.conf
+#qrencode -t png -o ./$USERNAME.png < ./$USERNAME.conf
