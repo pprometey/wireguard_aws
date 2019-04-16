@@ -28,8 +28,6 @@ exit 1;
 fi
 echo $ENDPOINT > ./endpoint.var
 
-echo $SERVER_IP | grep -o -E '([0-9]+\.){3}' > ./vpn_subnet.var
-
 if [ -z "$1" ]
   then 
     read -p "Enter the server address in the VPN subnet (CIDR format), [ENTER] set to default: 10.50.0.1: " SERVER_IP
@@ -38,6 +36,8 @@ if [ -z "$1" ]
     fi
   else SERVER_IP=$1
 fi
+
+echo $SERVER_IP | grep -o -E '([0-9]+\.){3}' > ./vpn_subnet.var
 
 read -p "Enter the ip address of the server DNS (CIDR format), [ENTER] set to default: 1.1.1.1): " DNS
 if [ -z $DNS ]
