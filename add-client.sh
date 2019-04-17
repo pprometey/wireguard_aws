@@ -70,6 +70,7 @@ AllowedIPs = $CLIENT_IP
 EOF
 
 # Restart Wireguard
+wg-quick down wg0
 systemctl stop wg-quick@wg0
 systemctl start wg-quick@wg0
 
