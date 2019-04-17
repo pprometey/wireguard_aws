@@ -53,11 +53,13 @@ PrivateKey = $CLIENT_PRIVKEY
 Address = $CLIENT_IP
 DNS = $DNS
 
+
 [Peer]
 PublicKey = $SERVER_PUBLIC_KEY
 PresharedKey = $CLIENT_PRESHARED_KEY
 AllowedIPs = $ALLOWED_IP
 Endpoint = $ENDPOINT
+PersistentKeepalive=25
 EOF
 
 # Add new client data to the Wireguard configuration file
@@ -71,14 +73,13 @@ EOF
 
 # Restart Wireguard
 systemctl stop wg-quick@wg0
-wg-quick down wg0
-wg-quick up wg0
 systemctl start wg-quick@wg0
 
 # Show QR config to display
 qrencode -t ansiutf8 < ./$USERNAME.conf
 
 # Show config file
+echo "# print $USERNAME.conf"
 cat ./$USERNAME.conf
 
 # Save QR config to png file
