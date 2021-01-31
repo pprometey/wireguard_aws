@@ -1,5 +1,3 @@
-The current version of the project is located at https://github.com/isystem-io/wireguard-aws
-
 # Install and use AWS-based Wireguard
 Scripts automate the installation and use of Wireguard on AWS with Ubuntu Server 18.04
 
