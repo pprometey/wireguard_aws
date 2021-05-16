@@ -2,9 +2,9 @@
 
 echo "# Installing Wireguard"
 
-./remove.sh
+./remove.sh && \
 
-./install.sh
+./install.sh && \
 
 ./add-client.sh
 

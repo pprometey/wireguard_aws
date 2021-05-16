@@ -20,13 +20,13 @@ read VPN_SUBNET < ./vpn_subnet.var
 PRESHARED_KEY="_preshared.key"
 PRIV_KEY="_private.key"
 PUB_KEY="_public.key"
-ALLOWED_IP="0.0.0.0/0, ::/0"
+ALLOWED_IP="0.0.0.0/0"
 
 # Go to the wireguard directory and create a directory structure in which we will store client configuration files
-mkdir -p ./clients
-cd ./clients
-mkdir ./$USERNAME
-cd ./$USERNAME
+mkdir -p ./clients && \
+	cd ./clients
+mkdir ./$USERNAME && \
+	cd ./$USERNAME
 umask 077
 
 CLIENT_PRESHARED_KEY=$( wg genpsk )
@@ -63,17 +63,16 @@ PersistentKeepalive=25
 EOF
 
 # Add new client data to the Wireguard configuration file
-cat >> /etc/wireguard/wg0.conf << EOF
+cat >> /etc/wireguard/wg0.conf << _EOF_
 
 [Peer]
 PublicKey = $CLIENT_PUBLIC_KEY
 PresharedKey = $CLIENT_PRESHARED_KEY
 AllowedIPs = $CLIENT_IP
-EOF
+_EOF_
 
 # Restart Wireguard
-systemctl stop wg-quick@wg0
-systemctl start wg-quick@wg0
+systemctl restart wg-quick@wg0
 
 # Show QR config to display
 qrencode -t ansiutf8 < ./$USERNAME.conf
