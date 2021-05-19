@@ -10,19 +10,19 @@ cd wireguard_vds
 sudo ./01-initial.sh
 ```
 
-The `01-initial.sh` script removes the previous Wireguard installation (если такая была), тспользуя скрипт `20-remove.sh`. It then installs and configures the Wireguard service using the `10-install.sh` script. And then creates a client using the `11-add-client.sh` script.
+Скрипт `01-initial.sh` удаляет предыдущую установку Wireguard (если такая была), используя скрипт `20-remove.sh`. Затем он устанавливает и настраивает Wireguard, используя скрипт `10-install.sh`. А затем создает клиента, используя скрипт `11-add-client.sh`.
 
 ### Добавить нового клиента
-`11-add-client.sh` - Script to add a new VPN client. As a result of the execution, it creates a configuration file ($CLIENT_NAME.conf) on the path ./clients/$CLIENT_NAME/, displays a QR code with the configuration.
+`11-add-client.sh` - скрипт добавляет нового VPN клиента. В результате выполнения, он создаст уонфигурационный файл клиента ($CLIENT_NAME.conf) по пути ./clients/$CLIENT_NAME/ и выведет на экран QR-код с конфигурацией.
 
 ```
-sudo ./add-client.sh
+sudo ./11-add-client.sh
 # или
-sudo ./add-client.sh $CLIENT_NAME
+sudo ./11-add-client.sh $CLIENT_NAME
 ```
 
 ### Сбросить настройки и записи о пользователях. Пересоздать сервер
-`19-reset.sh` - script that removes information about clients. And stopping the VPN server Winguard
+`19-reset.sh` - Скрипт удаляет информацию о клиентах и останавливает VPN сервер Winguard.
 ```
 sudo ./19-reset.sh
 ```
