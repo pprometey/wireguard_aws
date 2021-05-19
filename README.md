@@ -1,35 +1,36 @@
-# Install and use AWS-based Wireguard
-Scripts automate the installation and use of Wireguard on AWS with Ubuntu Server 18.04
+# Скрипт установки Wireguard 
+Скрипт автоматической установки и настройки Wireguard на сервере с Ubuntu Server 18.04 и новее.
 
-## How use
+## Как пользоваться
 
-### Installation
+### Установка
 ```
-git clone https://github.com/pprometey/wireguard_aws.git wireguard_aws
-cd wireguard_aws
-sudo ./initial.sh
+git clone https://github.com/blackden/wireguard_vds.git wireguard_aws
+cd wireguard_vds
+sudo ./01-initial.sh
 ```
 
-The `initial.sh` script removes the previous Wireguard installation (if any) using the `remove.sh` script. It then installs and configures the Wireguard service using the `install.sh` script. And then creates a client using the `add-client.sh` script.
+The `01-initial.sh` script removes the previous Wireguard installation (если такая была), тспользуя скрипт `20-remove.sh`. It then installs and configures the Wireguard service using the `10-install.sh` script. And then creates a client using the `11-add-client.sh` script.
 
 ### Add new customer
-`add-client.sh` - Script to add a new VPN client. As a result of the execution, it creates a configuration file ($CLIENT_NAME.conf) on the path ./clients/$CLIENT_NAME/, displays a QR code with the configuration.
+`11-add-client.sh` - Script to add a new VPN client. As a result of the execution, it creates a configuration file ($CLIENT_NAME.conf) on the path ./clients/$CLIENT_NAME/, displays a QR code with the configuration.
 
 ```
 sudo ./add-client.sh
-#OR
+# или
 sudo ./add-client.sh $CLIENT_NAME
 ```
 
 ### Reset customers
-`reset.sh` - script that removes information about clients. And stopping the VPN server Winguard
+`19-reset.sh` - script that removes information about clients. And stopping the VPN server Winguard
 ```
-sudo ./reset.sh
+sudo ./19-reset.sh
 ```
 
 ### Delete Wireguard
 ```
-sudo ./remove.sh
+sudo ./20-remove.sh
 ```
 ## Authors
-- Alexey Chernyavskiy
+- Fedorov Tech
+- Denis Fedorov
