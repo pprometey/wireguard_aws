@@ -17,31 +17,29 @@ cd /etc/wireguard/
 read DNS < ./dns.var
 read ENDPOINT < ./endpoint.var
 read VPN_SUBNET < ./vpn_subnet.var
-PRESHARED_KEY="_preshared.key"
-PRIV_KEY="_private.key"
-PUB_KEY="_public.key"
+PRESHARED_KEY=".preshared"
+PRIV_KEY=".key"
+PUB_KEY=".pub"
 ALLOWED_IP="0.0.0.0/0"
 
 # Go to the wireguard directory and create a directory structure in which we will store client configuration files
-mkdir -p ./clients && \
-	cd ./clients
-mkdir ./$USERNAME && \
-	cd ./$USERNAME
+mkdir -p ./clients/${USERNAME} && \
+	cd ./clients/${USERNAME}
 umask 077
 
 CLIENT_PRESHARED_KEY=$( wg genpsk )
 CLIENT_PRIVKEY=$( wg genkey )
 CLIENT_PUBLIC_KEY=$( echo $CLIENT_PRIVKEY | wg pubkey )
 
-#echo $CLIENT_PRESHARED_KEY > ./"$USERNAME$PRESHARED_KEY"
-#echo $CLIENT_PRIVKEY > ./"$USERNAME$PRIV_KEY"
-#echo $CLIENT_PUBLIC_KEY > ./"$USERNAME$PUB_KEY"
+echo ${CLIENT_PRESHARED_KEY{ > ./"${USERNAME}${PRESHARED_KEY}"
+echo ${CLIENT_PRIVKEY} > ./"${USERNAME}${PRIV_KEY}"
+echo ${CLIENT_PUBLIC_KEY} > ./"${USERNAME}${PUB_KEY}"
 
-read SERVER_PUBLIC_KEY < /etc/wireguard/server_public.key
+read SERVER_PUBLIC_KEY < /etc/wireguard/server.pub
 
 # We get the following client IP address
 read OCTET_IP < /etc/wireguard/last_used_ip.var
-OCTET_IP=$(($OCTET_IP+1))
+OCTET_IP=$((OCTET_IP+1))
 echo $OCTET_IP > /etc/wireguard/last_used_ip.var
 
 CLIENT_IP="$VPN_SUBNET$OCTET_IP/32"
@@ -82,4 +80,4 @@ echo "# Display $USERNAME.conf"
 cat ./$USERNAME.conf
 
 # Save QR config to png file
-#qrencode -t png -o ./$USERNAME.png < ./$USERNAME.conf
+qrencode -t png -o ./$USERNAME.png < ./$USERNAME.conf
