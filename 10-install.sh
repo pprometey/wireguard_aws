@@ -1,45 +1,45 @@
 #!/bin/bash
 
-#work direcrory
+# work direcrory
 WORK_DIR=/etc/wireguard
 
-
-# apt install software-properties-common -y
-# add-apt-repository ppa:wireguard/wireguard -y
-# update packages cashe and install wireguard and qr generator
+# установка wireguard
 apt update && \
 apt install -y wireguard-dkms wireguard-tools qrencode
 
 
-# allow ip forwarding
+# разрешить перенаправлени пакетов
 IP_FORWARD="net.ipv4.ip_forward=1"
 FORWARD_FILE=/etc/sysctl.d/99-ip_forward.conf
 echo $IP_FORWARD > $FORWARD_FILE && sysctl -p $FORWARD_FILE
-# sysctl -w  ${NET_FORWARD}
-# sed -i "s:#${NET_FORWARD}:${NET_FORWARD}:" /etc/sysctl.conf
 
-# go in work dir
+# перейти в рабочую директорию
 cd ${WORK_DIR}
 
 # change default umask
 umask 077
 
 # generate server keys
-SERVER_PRIVKEY=$( wg genkey )
-SERVER_PUBKEY=$( echo $SERVER_PRIVKEY | wg pubkey )
 
-echo $SERVER_PUBKEY > ./server.pub
-echo $SERVER_PRIVKEY > ./server.key
+
+if [[ -e server.pub && server.key ]]
+  then echo "ключи есть"	
+  else
+    SERVER_PRIVKEY=$( wg genkey )
+    SERVER_PUBKEY=$( echo $SERVER_PRIVKEY | wg pubkey )
+    echo $SERVER_PUBKEY > ./server.pub
+    echo $SERVER_PRIVKEY > ./server.key
+fi
 
 
 #set endpoit — wan server ip's
+WAN_IP=$(curl 2ip.ru)
 
-read -p "Enter the endpoint (external ip and port) in format [ipv4:port] (e.g. 4.3.2.1:54321):" ENDPOINT
+read -p "Enter the endpoint (external ip and port) in format [ipv4:port]. ([ENTER] set $WAN_IP:51820): " ENDPOINT
 if [ -z $ENDPOINT ]
-then
-	echo $(curl 2ip.ru) > ./endpoint.var
+  then echo "${WAN_IP}:51820" | tee ./endpoint.var; 
+  else echo $ENDPOINT > ./endpoint.var
 fi
-echo $ENDPOINT > ./endpoint.var
 
 # set vpn-server vpn address
 if [ -z "$1" ]
@@ -54,9 +54,9 @@ fi
 # set vpn-server subnet
 echo $SERVER_IP | grep -o -E '([0-9]+\.){3}' > ./vpn_subnet.var
 
-read -p "Enter the ip address of the server DNS (CIDR format), [ENTER] set to default: 1.1.1.1): " DNS
+read -p "Enter the ip address of the server DNS (CIDR format), [ENTER] set to default: 9.9.9.9): " DNS
 if [ -z $DNS ]
-then DNS="1.1.1.1"
+then DNS="9.9.9.9"
 fi
 echo $DNS > ./dns.var
 
