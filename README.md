@@ -5,7 +5,7 @@
 
 ### Установка
 ```
-git clone https://github.com/blackden/wireguard_vds.git wireguard_aws
+git clone https://github.com/blackden/wireguard_vds.git wireguard_vds
 cd wireguard_vds
 sudo ./01-initial.sh
 ```
