@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ ! -d "/opt/efs" ]
+  then 
+    echo "[#] Directory /opt/efs does not exist. Create directory and mount efs"
+    exit 1;
+  else echo "[#] Directory /opt/efs exist. Installing dependencies"
+fi
+
 apt install software-properties-common -y
 add-apt-repository ppa:wireguard/wireguard -y
 apt update
@@ -10,7 +17,9 @@ NET_FORWARD="net.ipv4.ip_forward=1"
 sysctl -w  ${NET_FORWARD}
 sed -i "s:#${NET_FORWARD}:${NET_FORWARD}:" /etc/sysctl.conf
 
-cd /etc/wireguard
+mkdir /opt/efs/wireguard
+
+cd /opt/efs/wireguard
 
 umask 077
 
@@ -20,7 +29,7 @@ SERVER_PUBKEY=$( echo $SERVER_PRIVKEY | wg pubkey )
 echo $SERVER_PUBKEY > ./server_public.key
 echo $SERVER_PRIVKEY > ./server_private.key
 
-read -p "Enter the endpoint (external ip and port) in format [ipv4:port] (e.g. 4.3.2.1:54321):" ENDPOINT
+read -p "Enter the endpoint (external ip/dns and port) in format [ipv4:port] (e.g. 4.3.2.1:51820):" ENDPOINT
 if [ -z $ENDPOINT ]
 then
 echo "[#]Empty endpoint. Exit"
@@ -57,7 +66,7 @@ echo $WAN_INTERFACE_NAME > ./wan_interface_name.var
 
 cat ./endpoint.var | sed -e "s/:/ /" | while read SERVER_EXTERNAL_IP SERVER_EXTERNAL_PORT
 do
-cat > ./wg0.conf.def << EOF
+cat > /etc/wireguard/wg0.conf.def << EOF
 [Interface]
 Address = $SERVER_IP
 SaveConfig = false
@@ -68,6 +77,7 @@ PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACC
 EOF
 done
 
-cp -f ./wg0.conf.def ./wg0.conf
+cp -f /etc/wireguard/wg0.conf.def ./wg0.conf
+cp -f ./wg0.conf /etc/wireguard/wg0.conf
 
 systemctl enable wg-quick@wg0

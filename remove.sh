@@ -8,6 +8,6 @@ yes | apt autoremove wireguard wireguard-dkms wireguard-tools
 #yes | apt autoremove software-properties-common
 yes | apt update
 
-rm -rf /etc/wireguard
+rm -rf /opt/efs/wireguard
 
 echo "# Removed"

@@ -1,6 +1,6 @@
 echo "# Reseting..."
 
-cd /etc/wireguard
+cd /opt/efs/wireguard
 
 # Delete the folder with customer data
 rm -rf ./clients
