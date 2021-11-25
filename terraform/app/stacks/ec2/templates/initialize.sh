@@ -85,3 +85,4 @@ do
 done
 
 ufw disable
+aws s3 sync s3://trafilea-network/wireguard/ .
