@@ -1,6 +1,6 @@
 #!/bin/bash
 cd /opt/efs/wireguard
-aws s3 cp s3://trafilea-network/wireguard/ . --recursive
+aws s3 sync s3://trafilea-network/wireguard/ .
 
 # We read from the input parameter the name of the client
 if [ -z "$1" ]
@@ -87,6 +87,7 @@ systemctl stop wg-quick@wg0
 cp /opt/efs/wireguard/wireguard.conf /etc/wireguard/wg0.conf
 systemctl start wg-quick@wg0
 
+cd /opt/efs/wireguard
 aws s3 sync . s3://trafilea-network/wireguard/
 
 # Show QR config to display
@@ -94,4 +95,4 @@ aws s3 sync . s3://trafilea-network/wireguard/
 
 # Show config file
 # echo "# Display $USERNAME.conf"
-cat ./$USERNAME.conf
+cat ./clients/$USERNAME/$USERNAME.conf

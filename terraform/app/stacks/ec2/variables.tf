@@ -57,11 +57,7 @@ variable "subnet_ids" {
   default = [ "subnet-033b4362bb5aeef3f", "subnet-087f86b851460da79", "subnet-0fb92c6d930240664" ]
 }
 
-variable "target_group_arns" {
-  type        = list(string)
-  default     = null
-  description = "Running a scaling group behind an LB requires this variable, default null means it won't be included if not set."
-}
+variable "target_group_arn" {}
 
 variable "allowed_ips" {
   type = string

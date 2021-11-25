@@ -40,7 +40,7 @@ resource "aws_autoscaling_group" "wireguard_asg" {
   vpc_zone_identifier  = var.subnet_ids
   health_check_type    = "EC2"
   termination_policies = ["OldestLaunchConfiguration", "OldestInstance"]
-  target_group_arns    = var.target_group_arns
+  target_group_arns    = [var.target_group_arn]
 
   lifecycle {
     create_before_destroy = true

@@ -21,7 +21,7 @@ fi
 
 cd /opt/efs/wireguard
 
-aws s3 cp s3://trafilea-network/wireguard/ . --recursive
+aws s3 sync s3://trafilea-network/wireguard/ .
 chmod +x *.sh
 
 FILE_SV_KEY=./server_private.key
@@ -85,4 +85,4 @@ do
 done
 
 ufw disable
-aws s3 sync s3://trafilea-network/wireguard/ .
+aws s3 sync . s3://trafilea-network/wireguard/

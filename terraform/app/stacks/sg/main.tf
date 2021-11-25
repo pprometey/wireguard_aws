@@ -36,6 +36,6 @@ resource "aws_security_group_rule" "internal" {
     from_port   = 0
     to_port     = 65535
     protocol    = "all"
-    source_security_group_id = aws_security_group.sg_wireguard.id
+    cidr_blocks = ["172.31.0.0/16"]
     security_group_id = aws_security_group.sg_wireguard.id
 }

@@ -6,3 +6,25 @@ resource "aws_lb" "lb" {
   internal                   = false
   enable_deletion_protection = false
 }
+
+resource "aws_lb_target_group" "lb_target" {
+  name     = "wireguard-target-group"
+  port     = 51820
+  protocol = "UDP"
+  vpc_id   = "vpc-0168c2f02fd3d2027"
+  health_check {
+    port = 8080
+    protocol = "TCP"
+  }
+}
+
+resource "aws_lb_listener" "lb_listener" {
+  load_balancer_arn = aws_lb.lb.arn
+  port              = 51820
+  protocol          = "UDP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.lb_target.arn
+  }
+}
