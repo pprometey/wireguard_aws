@@ -87,7 +87,7 @@ systemctl stop wg-quick@wg0
 cp /opt/efs/wireguard/wireguard.conf /etc/wireguard/wg0.conf
 systemctl start wg-quick@wg0
 
-aws s3 cp . s3://trafilea-network/wireguard/ --recursive
+aws s3 sync . s3://trafilea-network/wireguard/
 
 # Show QR config to display
 # qrencode -t ansiutf8 < ./$USERNAME.conf

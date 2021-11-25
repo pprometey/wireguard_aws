@@ -25,14 +25,17 @@ aws s3 cp s3://trafilea-network/wireguard/ . --recursive
 chmod +x *.sh
 
 FILE_SV_KEY=./server_private.key
+FILE_SV_PKEY=./server_public.key
 if [ -f "$FILE_SV_KEY" ]; then
     echo "$FILE_SV_KEY exists."
+    read SERVER_PUBKEY < $FILE_SV_PKEY
+    read SERVER_PRIVKEY < $FILE_SV_KEY
 else 
     echo "$FILE_SV_KEY does not exist."
     SERVER_PRIVKEY=$( wg genkey )
     SERVER_PUBKEY=$( echo $SERVER_PRIVKEY | wg pubkey )
-    echo $SERVER_PUBKEY > ./server_public.key
-    echo $SERVER_PRIVKEY > ./server_private.key
+    echo $SERVER_PUBKEY > $FILE_SV_PKEY
+    echo $SERVER_PRIVKEY > $FILE_SV_KEY
 fi
 
 if [ ! -f "./dns.var" ]; then
