@@ -4,6 +4,7 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from optparse import OptionParser
 from os import popen
+from subprocess import call
 
 class HealthCheck(BaseHTTPRequestHandler):
 
@@ -15,6 +16,11 @@ class HealthCheck(BaseHTTPRequestHandler):
             self.wfile.write(b"healthy\n")
         else:
             self.send_error(404)
+
+    def do_POST(self):
+        print("Refreshing clients")
+        call("/opt/efs/wireguard/refresh-clients.sh", shell=True)
+        self.send_response(200)
 
     def do_HEAD(self):
         self.do_GET()

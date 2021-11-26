@@ -1,16 +1,18 @@
 #!/bin/bash -v
-sudo chmod o+rw .
 apt-get update
 apt-get install nfs-common -y
 add-apt-repository ppa:wireguard/wireguard -y
 apt update
-apt install software-properties-common wireguard-dkms wireguard-tools qrencode awscli -y
+apt install software-properties-common wireguard-dkms wireguard-tools qrencode python3-pip -y
+pip install boto3
+pip install --upgrade awscli
 
 sysctl -w net.ipv4.ip_forward=1
 sysctl -w net.ipv6.conf.all.forwarding=0
 sed -i "s:#net.ipv4.ip_forward=1:net.ipv4.ip_forward=1:" /etc/sysctl.conf
 
 # Mount efs here
+chmod -R o+rw /opt
 mkdir /opt/efs
 mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ${efs_dns_name}:/ /opt/efs
 
@@ -23,6 +25,7 @@ cd /opt/efs/wireguard
 
 aws s3 sync s3://trafilea-network/wireguard/ .
 chmod +x *.sh
+chmod +x *.py
 
 FILE_SV_KEY=./server_private.key
 FILE_SV_PKEY=./server_public.key
@@ -86,3 +89,7 @@ done
 
 ufw disable
 aws s3 sync . s3://trafilea-network/wireguard/
+nohup python3 wg-health-check.py &
+echo "0 0 * * * /opt/efs/wireguard/refresh-clients.sh" >> refreshclients
+crontab refreshclients
+rm refreshclients

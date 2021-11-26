@@ -95,4 +95,4 @@ aws s3 sync . s3://trafilea-network/wireguard/
 
 # Show config file
 # echo "# Display $USERNAME.conf"
-cat ./clients/$USERNAME/$USERNAME.conf
+# cat ./clients/$USERNAME/$USERNAME.conf
