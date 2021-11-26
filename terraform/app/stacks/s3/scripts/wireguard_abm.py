@@ -5,12 +5,9 @@ from typing import Tuple
 from ipaddress import ip_address
 from subprocess import check_output
 
-
-ACCESS_KEY = "AKIAUBB2WHYUKZXURH4L"
-SECRET_KEY = "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"
 bucket = "trafilea-network"
-client = boto3.client("s3",aws_access_key_id=ACCESS_KEY,aws_secret_access_key=SECRET_KEY)
-resource = boto3.resource('s3',aws_access_key_id=ACCESS_KEY,aws_secret_access_key=SECRET_KEY)
+client = boto3.client("s3")
+resource = boto3.resource('s3')
 
 def s3_delete_folder(bucket: str, prefix: str):
     """
@@ -113,7 +110,7 @@ def delete_user(user: str):
     if not s3_file_exists(bucket, user_config_path):
         return {"error": f"{user} doesn't exists"}
 
-    user_pub_key = s3_get_file(bucket, f"wireguard/clients/{user}/PUB_KEY_{user}")
+    user_pub_key = remove_empty_lines(s3_get_file(bucket, f"wireguard/clients/{user}/PUB_KEY_{user}"))
     wireguard_conf_path = "wireguard/wireguard.conf"
     wireguard_conf = s3_get_file(bucket, wireguard_conf_path)
 
@@ -125,8 +122,10 @@ def delete_user(user: str):
 
     if pub_key_line is not None:
         new_wireguard_conf = "\n".join(wireguard_conf_splited[:pub_key_line-1] + wireguard_conf_splited[pub_key_line+3:])
-    
-    s3_delete_folder(bucket, f"wireguard/clients/{user}")
+    else:
+        return {"error": "Couldn't find user pubkey"}
+        
+    s3_delete_folder(bucket, f"wireguard/clients/{user}/")
     s3_save_file(bucket, wireguard_conf_path, new_wireguard_conf)
     return {"success": f"{user} deleted"}
 
