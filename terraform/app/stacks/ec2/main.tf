@@ -58,8 +58,28 @@ resource "aws_autoscaling_group" "wireguard_asg" {
       propagate_at_launch = true
     },
     {
+      key                 = "Environment"
+      value               = var.ts_env
+      propagate_at_launch = true
+    },
+    {
       key                 = "tf-managed"
       value               = "True"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "Owner"
+      value               = "infrastructure"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "Application"
+      value               = "vpn"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "Provisioned"
+      value               = "Terraspace"
       propagate_at_launch = true
     },
   ]

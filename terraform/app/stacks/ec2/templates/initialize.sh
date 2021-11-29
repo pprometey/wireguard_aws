@@ -42,7 +42,7 @@ else
 fi
 
 if [ ! -f "./dns.var" ]; then
-    DNS="8.8.8.8"
+    DNS="172.31.0.2"
     echo $DNS > ./dns.var
 fi
 

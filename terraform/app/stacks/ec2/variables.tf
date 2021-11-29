@@ -18,7 +18,7 @@ variable "wireguard_sg" {
 variable "efs_dns" {}
 
 variable "instance_type" {
-  default     = "t2.micro"
+  default     = "t2.micro" // a1.medium sound like the best choice considering network/price
   description = "The machine type to launch, some machines may offer higher throughput for higher use cases."
 }
 
