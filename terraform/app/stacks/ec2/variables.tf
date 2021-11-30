@@ -40,15 +40,15 @@ variable "wg_server_net" {
 }
 
 variable "asg_min_size" {
-  default     = 1
+  default     = 3
 }
 
 variable "asg_desired_capacity" {
-  default     = 1
+  default     = 3
 }
 
 variable "asg_max_size" {
-  default     = 3
+  default     = 6
 }
 
 variable "subnet_ids" {
