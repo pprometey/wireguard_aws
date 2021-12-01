@@ -1,4 +1,5 @@
-import boto3, time
+import boto3, time, json, os
+from urllib import request
 
 def send_command(command: str, instance_id: str) -> str:
     ssm = boto3.client('ssm',region_name='us-east-1')
@@ -21,17 +22,28 @@ def send_command(command: str, instance_id: str) -> str:
             break
     return output['StandardOutputContent']
 
+def notify(hook, msg):
+    try:
+        params = json.dumps({"text": msg}).encode('utf8')
+        req = request.Request(hook, headers={'content-type': 'application/json', 'Authorization': f'Bearer {os.environ["slack_token"]}'})
+        response = request.urlopen(req).read().decode("utf-8")
+        print(response)
+    except Exception as e:
+        print(f'failed to notify {hook} {str(e)}')
+        pass
 
-def abm_user(action: str, user: str):
+def abm_user(action, user, hook):
     asg = boto3.client('autoscaling',region_name='us-east-1')
     asg_response = asg.describe_auto_scaling_groups(AutoScalingGroupNames=['wireguard_asg'])
     instance_ids = [k['InstanceId'] for k in asg_response['AutoScalingGroups'][0]['Instances']]
     create_out = send_command(f'cd /opt/efs/wireguard && python3 wireguard_abm.py {action} {user}', instance_ids[0])
     if 'success' in create_out:
         refresh_all()
-        return { 'statusCode': 200, 'body': 'user ' + user + ' ' + action + 'ed'}
+        msg = f'user {user} {action} ed'
+        notify(hook, msg) if hook else None
+        return { 'statusCode': 200, 'body': msg}
     print(create_out)
-    return { 'statusCode': 400, 'body': 'user ' + user + ' ' + action + ' failed'}
+    return { 'statusCode': 400, 'body': f'user {user} {action} failed'}
 
 def refresh_all():
     asg = boto3.client('autoscaling',region_name='us-east-1')
@@ -49,7 +61,10 @@ def lambda_handler(event, context):
         if 'user' not in event:
             return { 'statusCode': 400, 'body': 'user not specified'}
         user = event['user']
-        return abm_user(action, user)
+        hook = None
+        if 'hook' in event:
+            hook = event['hook']
+        return abm_user(action, user, hook)
     elif action == 'refresh':
         refresh_all()
         return { 'statusCode': 200, 'body': 'users refreshed'}

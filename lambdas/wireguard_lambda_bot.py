@@ -7,12 +7,7 @@ bucket = "trafilea-network"
 s3Client = boto3.client("s3")
 lambdaClient = boto3.client('lambda')
 
-whitelisted_users = []
-
 def s3_get_file(bucket: str, key: str) -> str:
-    """
-    Downloads an object from S3
-    """
     response = s3Client.get_object(Bucket=bucket, Key=key)
     return response["Body"].read().decode("utf-8")
 
@@ -26,9 +21,9 @@ def process_body(body):
 
 def check_sign(event):
     body = event['body']
-    timestamp = event['headers']['x-slack-request-timestamp']
+    timestamp = event['headers']['X-Slack-Request-Timestamp']
     concat_message = ('v0:' + timestamp + ':' + body).encode()
-    slack_signature = event['headers']['x-slack-signature']
+    slack_signature = event['headers']['X-Slack-Signature']
     key = (os.environ['slack_secret']).encode()
     hashed_msg = 'v0=' + hmac.new(key, concat_message, hashlib.sha256).hexdigest()
     if (hashed_msg != slack_signature):
@@ -52,14 +47,11 @@ def vpn_command(user):
         respuesta = f"El {user} NO existe en la VPN"
         pass
         
-    return {
-        'statusCode': 200,
-        'body': respuesta
-    }
+    return { 'statusCode': 200, 'body': respuesta }
 
 
 WHITELIST = ["ignacio.norris", "marco.porracin"]
-def vpnabm_command(action, invoking_user, email):
+def vpnabm_command(action, invoking_user, email, hook):
     if action not in ['create', 'delete']:
         return { 'statusCode': 200, 'body': f"Invalid action {action}"}
     if invoking_user not in WHITELIST:
@@ -68,46 +60,41 @@ def vpnabm_command(action, invoking_user, email):
     regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
     if not re.fullmatch(regex, email):
         return { 'statusCode': 200, 'body': "Invalid email address"}
+        
+    new_user, company = email.split('@')
+    if 'trafilea' not in company:
+        return { 'statusCode': 200, 'body': "The new user must be a member of @trafiela.com" }
 
     response = lambdaClient.invoke(
         FunctionName='wireguard_abm',
         InvocationType='Event',
-        Payload=json.dumps({'action':action,'user': email.split('@')[0]})
+        Payload=json.dumps({'action':action,'user': new_user, 'hook': hook})
     )
     print(response)
-    return { 'statusCode': 200, 'body': "User is being created" }
-
+    return { 'statusCode': 200, 'body': f"User is being {action} ed" }
 
 def lambda_handler(event, context):
-    #if check_sign(event):
-    #    return {
-    #        'statusCode': 404,
-    #        'body': "Un-Authorized"
-    #    }
+    if check_sign(event):
+        return { 'statusCode': 200, 'body': "Un-Authorized" }
     
     params = process_body(event['body'])
     if params['channel_id'][0] == 'C':
-        return {
-            'statusCode': 200,
-            'body': "I'm not going public. Please DM me to get a proper answer !"
-        }
+        return { 'statusCode': 200, 'body': "I'm not going public. Please DM me to get a proper answer !"}
     
     command = params['command']
     email = get_user_email(params['user_id'])
     if email is None:
-        return {
-            'statusCode': 200,
-            'body': "Unable to get user email"
-        }
-    user = email.split('@')[0]
+        return { 'statusCode': 200, 'body': "Unable to get user email" }
+        
+    user, company = email.split('@')
+    if 'trafilea' not in company:
+        return { 'statusCode': 200, 'body': "You must be a member of @trafiela.com" }
+    
     if command == '/vpn':
         return vpn_command(user)
     elif command == '/vpnadd':
-        return vpnabm_command('create', user, params['text'].strip())
+        return vpnabm_command('create', user, params['text'].strip(), unquote(params['response_url']))
     elif command == '/vpnremove':
-        return vpnabm_command('delete', user, params['text'].strip())
+        return vpnabm_command('delete', user, params['text'].strip(), unquote(params['response_url']))
     else:
-        return {
-            'statusCode': 200,
-            'body': f"Invalid command {command}"
-        }
+        return { 'statusCode': 200, 'body': f"Invalid command {command}"}
