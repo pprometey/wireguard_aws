@@ -44,7 +44,7 @@ def vpn_command(user):
     try:
         respuesta = s3_get_file(bucket, user_config_path)
     except:
-        respuesta = f"El {user} NO existe en la VPN"
+        respuesta = f"El user {user} NO existe en la VPN. Solicita al team de infrastructura la creacion del mismo."
         pass
         
     return { 'statusCode': 200, 'body': respuesta }
