@@ -49,6 +49,12 @@ read SERVER_PUBLIC_KEY < /etc/wireguard/server.pub
 
 # We get the following client IP address
 read OCTET_IP < /etc/wireguard/last_used_ip.var
+if
+	[[ $OCTET_IP -ge 254 ]]; then
+	echo "Пул исчерпан!"
+	exit 1;
+fi
+
 OCTET_IP=$((OCTET_IP+1))
 echo $OCTET_IP > /etc/wireguard/last_used_ip.var
 
