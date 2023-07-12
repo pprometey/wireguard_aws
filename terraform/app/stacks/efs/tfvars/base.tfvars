@@ -1,1 +1,0 @@
-wireguard_sg                    = <%= output('sg.sg_id') %>

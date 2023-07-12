@@ -1,1 +1,0 @@
-lb_dns                           = <%= output('lb.lb_dns') %>
