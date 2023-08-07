@@ -41,7 +41,7 @@ if [ -z $ENDPOINT ]
   else echo $ENDPOINT > ./endpoint.var
 fi
 
-# set vpn-server vpn address
+# Задаем ip-адрес сервера
 if [ -z "$1" ]
   then 
     read -p "Enter the server address in the VPN subnet (CIDR format), [ENTER] set to default: 10.100.200.1: " SERVER_IP
