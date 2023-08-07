@@ -19,7 +19,7 @@ cd ${WORK_DIR}
 # change default umask
 umask 077
 
-# generate server keys
+# Генерация ключей сервера
 
 
 if [[ -e server.pub && server.key ]]
